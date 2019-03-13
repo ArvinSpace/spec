@@ -1,5 +1,5 @@
 
-# JavaScript编码规范
+# JavaScript编码规范（ES6之前）
 
 
 
@@ -141,12 +141,13 @@ JavaScript 在百度一直有着广泛的应用，特别是在浏览器端的行
 ### 2.1 文件
 
 
-##### [建议] JavaScript 文件使用无 `BOM` 的 `UTF-8` 编码。
+##### [强制] JavaScript 文件使用无 `BOM` 的 `UTF-8` 编码。
 
 解释：
 
 UTF-8 编码具有更广泛的适应性。BOM 在使用程序或工具处理文件时可能造成不必要的干扰。
 
+##### [强制] 在文件开头加入强制模式开关use strict。
 ##### [建议] 在文件结尾处，保留一个空行。
 
 
@@ -573,7 +574,7 @@ var array = [
 ];
 ```
 
-##### [建议] 对于 `if...else...`、`try...catch...finally` 等语句，推荐使用在 `}` 号后添加一个换行 的风格，使代码层次结构更清晰，阅读性更好。
+##### [强制] 对于 `if...else...`、`try...catch...finally` 等语句，在 `}` 号后添加一个换行，使代码层次结构更清晰，阅读性更好，且不会出错编译器在)后误加;号而引起错误。
 
 示例：
 
@@ -672,6 +673,13 @@ var func = (function () {
 
 ### 2.3 命名
 
+##### [强制] `文件` 使用 `下划线命名`
+###### 单词之间使用 `_` (underscore) 来 分割，如果你不想暴露某个文件给用户 ， 你也可以用`_` 来开头
+
+示例：
+child_process.js
+string_decoder.js
+_linklist.js
 
 ##### [强制] `变量` 使用 `Camel命名法`。
 
@@ -809,6 +817,8 @@ loadingData.then(callback);
 ### 2.4 注释
 
 
+#### [建议] 请尝试在更高层次来编写注释（解释函数整体的思路）， 只在解释一些难以理解代码的时候添加注释，而不是给一些琐碎的东西加上注释
+
 #### 2.4.1 单行注释
 
 
@@ -817,7 +827,7 @@ loadingData.then(callback);
 #### 2.4.2 多行注释
 
 
-##### [建议] 避免使用 `/*...*/` 这样的多行注释。有多行注释内容时，使用多个单行注释。
+##### [建议] 避免使用 `/*...*/` 这样的多行注释。有多行注释内容时，使用多个单行注释。使用此注释一般用于ESLint忽略
 
 
 #### 2.4.3 文档化注释
@@ -1458,10 +1468,10 @@ function foo(p1, p2, opt_p3) {
 
 解释：
 
-1. TODO: 有功能待实现。此时需要对将要实现的功能进行简单说明。
-2. FIXME: 该处代码运行没问题，但可能由于时间赶或者其他原因，需要修正。此时需要对如何修正进行简单说明。
-3. HACK: 为修正某些问题而写的不太好或者使用了某些诡异手段的代码。此时需要对思路或诡异手段进行描述。
-4. XXX: 该处存在陷阱。此时需要对陷阱进行描述。
+1. ***TODO***: 有功能待实现。此时需要对将要实现的功能进行简单说明。
+2. ***FIXME***: 该处代码运行没问题，但可能由于时间赶或者其他原因，需要修正。此时需要对如何修正进行简单说明。
+~~3. HACK: 为修正某些问题而写的不太好或者使用了某些诡异手段的代码。此时需要对思路或诡异手段进行描述。~~
+~~4. XXX: 该处存在陷阱。此时需要对陷阱进行描述。~~
 
 
 
@@ -1686,6 +1696,22 @@ if (noValue === null || typeof noValue === 'undefined') {
 
 1. 阅读的人容易找到最常见的情况，增加可读性。
 2. 提高执行效率。
+
+
+##### [建议] 使用有意义的判断条件。
+
+```javascript
+//good
+var isValidPassword = password.length >= 4 && /^(?=.*\d).{4,}$/.test(password);
+if (isValidPassword) {
+    console.log('winning');
+}
+
+//bad
+if (password.length >= 4 && /^(?=.*\d).{4,}$/.test(password)) {
+    console.log('losing');
+}
+```
 
 
 ##### [建议] 对于相同变量或表达式的多值条件，用 `switch` 代替 `if`。
@@ -1956,7 +1982,7 @@ parseInt(num, 10);
 ### 3.5 字符串
 
 
-##### [强制] 字符串开头和结束使用单引号 `'`。
+##### [强制] 字符串开头和结束使用单引号 `''`（写JSON 时除外）。
 
 解释：
 
@@ -1997,6 +2023,18 @@ var str2 = '' // 建议第一个为空字符串, 第二个换行开始并缩进�
     +    '<li>第二项</li>',
     + '</ul>';
 ```
+
+
+##### [强制] 当使用 _dirname 和 _filename 时不允许字符串拼接，windows和unix路径分隔符不同，为了避免混淆并且创建正确的路径，Node.js 提供了 path模块
+```javascript
+// good
+var fullPath = path.join(__dirname, "foo.js");
+var fullPath = path.resolve(__dirname, "foo.js");
+
+// bad
+var fullPath = __dirname + "foo.js";
+```
+
 
 ##### [建议] 使用字符串拼接的方式生成HTML，需要根据语境进行合理的转义。
 
@@ -2314,10 +2352,48 @@ function removeElement(element, options) {
 - 当配置项有增长时，无需无休止地增加参数个数，不会出现 `removeElement(element, true, false, false, 3)` 这样难以理解的调用代码。
 - 当部分配置参数可选时，多个参数的形式非常难处理重载逻辑，而使用一个 options 对象只需判断属性是否存在，实现得以简化。
 
+##### [强制] 的异步回调函数的第一个参数应该是错误指示
+
+示例：
+```javascript
+function cb(err, data , ...) {...}
+```
+
+
+##### [建议] 尽早的从函数中返回，减少分支嵌套
+示例：
+```javascript
+//good
+function isPercentage(val) {
+    if (val < 0) {
+        return false;
+    }
+    if (val > 100) {
+        return false;
+    }
+    return true;
+}
+
+//bad
+function isPercentage(val) {
+    if (val >= 0) {
+        if (val < 100) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+```
 
 
 #### 3.8.3 闭包
 
+##### [建议] 给你的闭包命名
+
+请尽量给你的闭包、匿名函数命名。 这让人知道你在意这个函数，更重要的是，这将会产生可读性更好的堆栈跟踪和CPU调用信息等。
 
 ##### [建议] 在适当的时候将闭包内大对象置为 `null`。
 
@@ -2428,6 +2504,17 @@ MyClass.prototype.hooks.after = EMPTY_FUNCTION;
 
 ### 3.9 面向对象
 
+
+##### [建议] 尽管有许多的方法来实现继承，但是最为推荐的是 Node 的标准写法
+```javascript
+function Socket(options) {
+  // ...
+  stream.Stream.call(this);
+  // ...
+}
+
+util.inherits(Socket, stream.Stream);
+```
 
 ##### [强制] 类的继承方案，实现时需要修正 `constructor`。
 
@@ -2936,6 +3023,7 @@ expando 属性绑定事件容易导致互相覆盖。
 
 
 ##### [建议] 在没有事件自动管理的框架支持下，应持有监听器函数的引用，在适当时候（元素释放、页面卸载等）移除添加的监听器。
+
 
 
 
