@@ -1011,7 +1011,8 @@ getUser(userId)
 ```
 
 
-#### [强制] 使用标准的 `Promise` API。
+#### ~~[强制] 使用标准的 `Promise` API。~~
+###### 标准的`Promise` API不一定比bluebird实现性能更好，迁移到标准也需要时间，暂时不使用标准的。
 
 解释：
 
