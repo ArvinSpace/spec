@@ -1,50 +1,51 @@
 
+
 # JavaScript 编码规范 - ESNext 补充篇（草案）
 
 
 
 
-[1 前言](#user-content-1-%E5%89%8D%E8%A8%80)
+[1 前言](#user-content-1-前言)
 
-[2 代码风格](#user-content-2-%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC)
+[2 代码风格](#user-content-2-代码风格)
 
-　　[2.1 文件](#user-content-21-%E6%96%87%E4%BB%B6)
+　　[2.1 文件](#user-content-21-文件)
 
-　　[2.2 结构](#user-content-22-%E7%BB%93%E6%9E%84)
+　　[2.2 结构](#user-content-22-结构)
 
-　　　　[2.2.1 缩进](#user-content-221-%E7%BC%A9%E8%BF%9B)
+　　　　[2.2.1 缩进](#user-content-221-缩进)
 
-　　　　[2.2.2 空格](#user-content-222-%E7%A9%BA%E6%A0%BC)
+　　　　[2.2.2 空格](#user-content-222-空格)
 
-　　　　[2.2.3 语句](#user-content-223-%E8%AF%AD%E5%8F%A5)
+　　　　[2.2.3 语句](#user-content-223-语句)
 
-[3 语言特性](#user-content-3-%E8%AF%AD%E8%A8%80%E7%89%B9%E6%80%A7)
+[3 语言特性](#user-content-3-语言特性)
 
-　　[3.1 变量](#user-content-31-%E5%8F%98%E9%87%8F)
+　　[3.1 变量](#user-content-31-变量)
 
-　　[3.2 解构](#user-content-32-%E8%A7%A3%E6%9E%84)
+　　[3.2 解构](#user-content-32-解构)
 
-　　[3.3 模板字符串](#user-content-33-%E6%A8%A1%E6%9D%BF%E5%AD%97%E7%AC%A6%E4%B8%B2)
+　　[3.3 模板字符串](#user-content-33-模板字符串)
 
-　　[3.4 函数](#user-content-34-%E5%87%BD%E6%95%B0)
+　　[3.4 函数](#user-content-34-函数)
 
-　　[3.5 箭头函数](#user-content-35-%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0)
+　　[3.5 箭头函数](#user-content-35-箭头函数)
 
-　　[3.6 对象](#user-content-36-%E5%AF%B9%E8%B1%A1)
+　　[3.6 对象](#user-content-36-对象)
 
-　　[3.7 类](#user-content-37-%E7%B1%BB)
+　　[3.7 类](#user-content-37-类)
 
-　　[3.8 模块](#user-content-38-%E6%A8%A1%E5%9D%97)
+　　[3.8 模块](#user-content-38-模块)
 
-　　[3.9 集合](#user-content-39-%E9%9B%86%E5%90%88)
+　　[3.9 集合](#user-content-39-集合)
 
-　　[3.10 异步](#user-content-310-%E5%BC%82%E6%AD%A5)
+　　[3.10 异步](#user-content-310-异步)
 
-[4 环境](#user-content-4-%E7%8E%AF%E5%A2%83)
+[4 环境](#user-content-4-环境)
 
-　　[4.1 运行环境](#user-content-41-%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83)
+　　[4.1 运行环境](#user-content-41-运行环境)
 
-　　[4.2 预编译](#user-content-42-%E9%A2%84%E7%BC%96%E8%AF%91)
+　　[4.2 预编译](#user-content-42-预编译)
 
 
 
@@ -351,7 +352,7 @@ let {name: personName, email: personEmail,
 ### 3.1 变量
 
 
-#### [强制] 使用 `let` 和 `const` 定义变量，不使用 `var`。
+#### [强制] ES6开始使用 `let` 和 `const` 定义变量，不使用 `var`。
 
 解释：
 
@@ -421,6 +422,24 @@ let len = myString.length;
 
 // bad
 let {length: len} = myString;
+```
+
+#### [建议] 如果函数返回多个值，优先使用对象的解构赋值，而不是数组的解构赋值。这样便于以后添加返回值，以及更改返回值的顺序。
+
+示例：
+
+```
+// bad
+function processInput(input) {
+  return [left, right, top, bottom];
+}
+
+// good
+function processInput(input) {
+  return { left, right, top, bottom };
+}
+
+const { left, right } = processInput(input);
 ```
 
 #### [强制] 如果不节省编写时产生的中间变量，解构表达式 `=` 号右边不允许是 `ObjectLiteral` 和 `ArrayLiteral`。
@@ -537,7 +556,7 @@ function foo() {
 
 解释：
 
-箭头函数会强制绑定当前环境下的 `this`。
+箭头函数会强制绑定当前环境下的 `this`，也就是说如果函数设计为需要动态获取当时的this的话，就不要使用箭头函数。
 
 
 
@@ -737,7 +756,7 @@ class TextNode extends Node {
 
 
 
-### 3.8 模块
+### 3.8 模块(node8.xx不支持)
 
 
 
@@ -848,7 +867,7 @@ let otherArr = [...arr];
 2. 需要遍历过程中的索引。
 
 
-#### [强制] 当键值有可能不是字符串时，必须使用 `Map`；当元素有可能不是字符串时，必须使用 `Set`。
+#### ~~[强制] 当键值有可能不是字符串时，必须使用 `Map`；当元素有可能不是字符串时，必须使用 `Set`~~。
 
 解释：
 
@@ -1225,6 +1244,8 @@ ESNext 模块经过编译后，named export 会挂载在 exports 对象上，def
 所以，老的 AMD/CommonJS 模块依赖了 default export 的 ESNext 模块时，对 default export 的 require 需要改造成 `require('name').default`。
 
 另外，如果是 ESNext 模块之间的互相依赖，transpiler 会通过加入中间对象和引入 interop 方法，所以不会产生这个问题。
+
+
 
 
 
